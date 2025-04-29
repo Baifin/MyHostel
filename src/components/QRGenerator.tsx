@@ -1,40 +1,48 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
+import QRCode from 'react-qr-code'; // Import the QRCode component
 
 const QRGenerator: React.FC = () => {
   const [visitorName, setVisitorName] = useState('');
   const [purpose, setPurpose] = useState('');
   const [contact, setContact] = useState('');
+  const [qrData, setQrData] = useState(''); // State to store QR code data
   const { toast } = useToast();
-  
-  // In a real app, this would generate an actual QR code
+
   const generateQR = () => {
     if (!visitorName || !purpose || !contact) {
       toast({
-        variant: "destructive",
-        title: "Missing information",
-        description: "Please fill in all fields to generate a QR code.",
+        variant: 'destructive',
+        title: 'Missing information',
+        description: 'Please fill in all fields to generate a QR code.',
       });
       return;
     }
-    
-    // Simulate QR generation
+
+    // Create a JSON object with the form data
+    const data = JSON.stringify({
+      name: visitorName,
+      purpose,
+      contact,
+    });
+
+    setQrData(data); // Store the QR data
+
     toast({
-      title: "QR Code Generated",
+      title: 'QR Code Generated',
       description: `A QR code has been generated for ${visitorName}.`,
     });
-    
-    // Clear form
-    setVisitorName('');
-    setPurpose('');
-    setContact('');
+
+    // Optionally, clear the form after generating the QR code
+    // setVisitorName('');
+    // setPurpose('');
+    // setContact('');
   };
-  
+
   return (
     <Card>
       <CardHeader>
@@ -70,6 +78,13 @@ const QRGenerator: React.FC = () => {
             type="tel"
           />
         </div>
+
+        {qrData && (
+          <div className="flex justify-center pt-4">
+            {/* QRCode now uses the `qrData` from the state */}
+            <QRCode value={qrData} size={180} />
+          </div>
+        )}
       </CardContent>
       <CardFooter>
         <Button onClick={generateQR} className="w-full">Generate QR Code</Button>
